@@ -7,5 +7,6 @@ router.post('/profile', handlers.updateProfile);
 
 //to get profile
 router.get('/profile', handlers.getProfile);
+router.get('/feed', handlers.getFeed);
 
 module.exports = router;

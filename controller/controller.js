@@ -1,7 +1,9 @@
 const Utils = require('../utils/utils');
 const Model = require('../model/model');
+const GetFeedLogic = require('../logic/getFeedLogic');
 const utils = new Utils();
 const model = new Model();
+const getFeedLogic = new GetFeedLogic();
 
 
 let handlers = {
@@ -14,22 +16,17 @@ let handlers = {
 			linkedInProfile : req.body.linkedInProfile,
 			otherLinks : req.body.otherLinks,
 			resume : req.body.resume,
-			status : req.body.status,
+			stat : req.body.stat,
 			company : req.body.company,
 			positionOffered : req.body.positionOffered,
 			revokedLetter : req.body.revokedLetter,
 			avatar: req.body.avatar,
-			isverified: false,
+			isVerified: false,
 			updatedOn: new Date().toString()
 		};
 		if (!utils.isValidUpdateReq(profile)) {
 			return resp.status(400).json({ msg: 'Bad Request' });
 		}
-
-		const params = {
-			TableName: 'Profile',
-			Item: profile
-		};
 
 		await model.updateProfile(profile)
 			.then(() => {
@@ -49,7 +46,17 @@ let handlers = {
 				return resp.status(200).json({ profile: userData });
 			})
 			.catch(error => {
-				console.log(error);
+				return resp.status(500).json({ msg: 'Internal Server Error' });
+			});
+	},
+
+	getFeed: async (req, resp) => {
+		await getFeedLogic.getFeed(req)
+			.then((data) => {
+				//let userData = data.Item;
+				return resp.status(200).json({ data: data });
+			})
+			.catch(error => {
 				return resp.status(500).json({ msg: 'Internal Server Error' });
 			});
 	}
