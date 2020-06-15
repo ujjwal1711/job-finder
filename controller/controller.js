@@ -22,15 +22,15 @@ let handlers = {
 			name : req.body.name,
 			year : req.body.year,
 			linkedInProfile : req.body.linkedInProfile,
-			otherLinks : req.body.otherLinks,
+			otherLinks : JSON.stringify(req.body.otherLinks),
 			resume : req.body.resume,
-			stat : req.body.stat,
+			status : req.body.stat,
 			company : req.body.company,
 			positionOffered : req.body.positionOffered,
 			revokedLetter : req.body.revokedLetter,
 			avatar: req.body.avatar,
 			isVerified: false,
-			updatedOn: new Date().toString()
+			updatedOn: Number(new Date)
 		};
 		if (!utils.isValidUpdateReq(profile)) {
 			return resp.status(400).json({ msg: 'Bad Request' });
@@ -40,19 +40,19 @@ let handlers = {
 				return resp.status(200).json({ msg: 'successfully updated profile' });
 			})
 			.catch(error => {
+				console.log(error);
 				return resp.status(500).json({ msg: 'Internal Server Error' });
 			});
 	},
 
 	getProfile: async (req, resp) => {
-		let email = req.body.email;
-		console.log(email);
+		let email = req.query.email;
 		await model.getProfile(email)
 			.then((data) => {
-				let userData = data.Item;
-				return resp.status(200).json({ profile: userData });
+				return resp.status(200).json({ profile: (data[0] || {}) });
 			})
 			.catch(error => {
+				console.log(error);
 				return resp.status(500).json({ msg: 'Internal Server Error' });
 			});
 	},
@@ -60,10 +60,10 @@ let handlers = {
 	getFeed: async (req, resp) => {
 		await getFeedLogic.getFeed(req)
 			.then((data) => {
-				//let userData = data.Item;
-				return resp.status(200).json({ data: data });
+				return resp.status(200).json({ feed: data });
 			})
 			.catch(error => {
+				console.log(error);
 				return resp.status(500).json({ msg: 'Internal Server Error' });
 			});
 	}
