@@ -9,8 +9,16 @@ const getFeedLogic = new GetFeedLogic();
 let handlers = {
 	// eslint-disable-next-line consistent-return
 	updateProfile: async (req, resp) => {
+
+		let token = req.get('token-id');
+		let email = req.body.email;
+
+		let isValidToken = await utils.verifyToken(token,email);
+		if(!isValidToken){
+			return resp.status(400).json({ msg: 'Invalid Token' });
+		}
 		const profile = {
-			email: req.body.email,
+			email: email,
 			name : req.body.name,
 			year : req.body.year,
 			linkedInProfile : req.body.linkedInProfile,
@@ -27,7 +35,6 @@ let handlers = {
 		if (!utils.isValidUpdateReq(profile)) {
 			return resp.status(400).json({ msg: 'Bad Request' });
 		}
-
 		await model.updateProfile(profile)
 			.then(() => {
 				return resp.status(200).json({ msg: 'successfully updated profile' });
