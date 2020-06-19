@@ -11,20 +11,19 @@ let handlers = {
 	updateProfile: async (req, resp) => {
 
 		let token = req.get('token-id');
-		let email = req.body.email;
 
-		let isValidToken = await utils.verifyToken(token,email);
-		if(!isValidToken){
+		let isValidToken = await utils.verifyToken(token);
+		if(!isValidToken.valid){
 			return resp.status(400).json({ msg: 'Invalid Token' });
 		}
 		const profile = {
-			email: email,
+			email: isValidToken.email,
 			name : req.body.name,
 			year : req.body.year,
 			linkedInProfile : req.body.linkedInProfile,
 			otherLinks : JSON.stringify(req.body.otherLinks),
 			resume : req.body.resume,
-			status : req.body.stat,
+			status : req.body.status,
 			company : req.body.company,
 			positionOffered : req.body.positionOffered,
 			revokedLetter : req.body.revokedLetter,
