@@ -8,7 +8,7 @@ class Utils {
 		return false;
 	}
 
-	verifyToken(token, email){
+	verifyToken(token){
 		return new Promise((resolve, reject) =>  {
 			const url = `https://oauth2.googleapis.com/tokeninfo?id_token=${token}`
 			const options = {
@@ -18,15 +18,15 @@ class Utils {
 			};
 			request(options, (err, response, body) => {
 				if (err) {
-					return resolve(false);
+					return resolve( { valid : false } );
 				}
 				if (response.statusCode != 200) {
-					return resolve(false);
+					return resolve({valid : false});
 				}
-				if(body.email != email){
-					return resolve(false);
+				if(body.email){
+					return resolve({valid : true, email : body.email});
 				}
-				return resolve(true);
+				return resolve({valid : false});
 			});
 		});
 	}
