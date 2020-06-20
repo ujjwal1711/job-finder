@@ -28,13 +28,17 @@ let handlers = {
 			positionOffered : req.body.positionOffered,
 			revokedLetter : req.body.revokedLetter,
 			avatar: req.body.avatar,
-			isVerified: false,
+			isVerified: 0,
 			updatedOn: Number(new Date)
 		};
 		if (!utils.isValidUpdateReq(profile)) {
 			return resp.status(400).json({ msg: 'Bad Request' });
 		}
-		await model.updateProfile(profile)
+		let updateIsVerified = false;
+		if(req.body.prevVerifiedStatus === '-1'){
+			updateIsVerified = true;
+		}
+		await model.updateProfile(profile, updateIsVerified)
 			.then(() => {
 				return resp.status(200).json({ msg: 'successfully updated profile' });
 			})
