@@ -15,9 +15,12 @@ db.connect((err) => {
 });
 
 class Model{
-	updateProfile(profile){
+	updateProfile(profile, updateIsVerified){
 		return new Promise((resolve, reject) => {
 			let query = `INSERT INTO PROFILE SET ? ON DUPLICATE KEY UPDATE linkedInProfile = "${profile.linkedInProfile}", otherLinks = '${profile.otherLinks}', resume = "${profile.resume}", avatar = "${profile.avatar}"`;
+			if(updateIsVerified) {
+				query += `, isVerified = 0`;
+			}
 			db.query(query, profile, (err, result) => {
 				if(err) {
 					console.log(err);
