@@ -2,7 +2,7 @@ const request = require('request');
 class Utils {
 	isValidUpdateReq(profile) {
 		if (profile.email && profile.name && profile.year && profile.linkedInProfile && profile.resume && profile.status &&
-				profile.company && profile.positionOffered) {
+				profile.company && profile.positionType && profile.positionTitle) {
 			return true;
 		}
 		return false;

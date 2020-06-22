@@ -25,10 +25,12 @@ let handlers = {
 			resume : req.body.resume,
 			status : req.body.status,
 			company : req.body.company,
-			positionOffered : req.body.positionOffered,
+			positionType : req.body.positionType,
+			positionTitle : req.body.positionTitle,
 			revokedLetter : req.body.revokedLetter,
 			avatar: req.body.avatar,
-			isVerified: 0,
+			verifiedState: 0,
+			registeredOn : Number(new Date),
 			updatedOn: Number(new Date)
 		};
 		if (!utils.isValidUpdateReq(profile)) {
