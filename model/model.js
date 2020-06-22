@@ -1,18 +1,12 @@
 const mysql = require('mysql');
 
-const db = mysql.createConnection({
+const db = mysql.createPool({
+	connectionLimit : 10,
 	host : 'localhost',
 	user : 'root',
 	password : '',
 	database : 'jobFinder'
-});
-
-db.connect((err) => {
-	if(err){
-		throw err;
-	}
-	console.log('mysql connected....');
-});
+})
 
 class Model{
 	updateProfile(profile, updateIsVerified){
