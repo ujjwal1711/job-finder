@@ -17,9 +17,9 @@ db.connect((err) => {
 class Model{
 	updateProfile(profile, updateIsVerified){
 		return new Promise((resolve, reject) => {
-			let query = `INSERT INTO PROFILE SET ? ON DUPLICATE KEY UPDATE linkedInProfile = "${profile.linkedInProfile}", otherLinks = '${profile.otherLinks}', resume = "${profile.resume}", avatar = "${profile.avatar}"`;
+			let query = `INSERT INTO PROFILE SET ? ON DUPLICATE KEY UPDATE linkedInProfile = "${profile.linkedInProfile}", otherLinks = '${profile.otherLinks}', resume = "${profile.resume}", avatar = "${profile.avatar}", name = "${profile.name}", updatedOn = ${profile.registeredOn}`;
 			if(updateIsVerified) {
-				query += `, isVerified = 0`;
+				query += `, verifiedState = 0`;
 			}
 			db.query(query, profile, (err, result) => {
 				if(err) {
@@ -47,17 +47,18 @@ class Model{
 		});
 	}
 
-	feed(offset, limit, filterBy, filterValue) {
+	feed(offset, limit, filterObject) {
 		return new Promise((resolve, reject) => {
-			let query;
-			if(filterBy) {
-				query = `SELECT * FROM  PROFILE WHERE ${filterBy} = "${filterValue}" AND isVerified = 1 ORDER BY updatedOn DESC LIMIT ${limit}`;
-			} else {
-				query = `SELECT * FROM  PROFILE WHERE isVerified = 1 ORDER BY updatedOn DESC LIMIT ${limit}`;
+			let query = `SELECT * FROM PROFILE WHERE `;
+			for (let [key, value] of Object.entries(filterObject)) {
+				console
+				if(key == 'year' && value) {
+					query += `${key} = ${value} AND `;
+				} else if(value){
+					query += `${key} = "${value}" AND `;
+				}
 			}
-			if(offset){
-				query +=  ` OFFSET ${offset}`;
-			}
+			query += `verifiedState = 1 ORDER BY registeredOn ASC LIMIT ${limit} OFFSET ${offset}`;
 			db.query(query, (err, result) => {
 				if(err) {
 					console.log(err);
@@ -75,14 +76,18 @@ class Model{
 		});
 	}
 
-	getCount(filterBy,filterValue) {
+	getCount(filterObject) {
 		return new Promise((resolve, reject) => {
-			let query;
-			if(filterBy) {
-				query = `SELECT COUNT(*) AS totalCount FROM PROFILE WHERE ${filterBy} = "${filterValue}" AND isVerified = 1`;
-			} else {
-				query = `SELECT COUNT(*) AS totalCount FROM PROFILE WHERE isVerified = 1`;
+			let query = `SELECT COUNT(*) AS totalCount FROM PROFILE WHERE `;
+			for (let [key, value] of Object.entries(filterObject)) {
+				console
+				if(key == 'year' && value) {
+					query += `${key} = ${value} AND `;
+				} else if(value){
+					query += `${key} = "${value}" AND `;
+				}
 			}
+			query += `verifiedState = 1`;
 			db.query(query, (err, result) => {
 				if(err) {
 					return reject(err);
