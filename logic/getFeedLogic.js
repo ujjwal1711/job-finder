@@ -8,8 +8,8 @@ class GetFeedLogic {
 				let offset = Number(req.query.offset) || 0;
 				let limit = Number(req.query.limit) || 10;
 				let filterObject = {};
-				filterObject.positionType = req.query.jobType || null;
-				filterObject.positionTitle = req.query.jobTitle || null;
+				filterObject.jobType = req.query.jobType || null;
+				filterObject.jobTitle = req.query.jobTitle || null;
 				filterObject.year = req.query.year || null;
 				let data = await model.feed(offset, limit, filterObject);
 				let totalCount = await model.getCount(filterObject);
