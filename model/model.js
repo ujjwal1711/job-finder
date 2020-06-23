@@ -11,13 +11,12 @@ const db = mysql.createPool({
 class Model{
 	updateProfile(profile, updateIsVerified){
 		return new Promise((resolve, reject) => {
-			let query = `INSERT INTO PROFILE SET ? ON DUPLICATE KEY UPDATE linkedInProfile = "${profile.linkedInProfile}", otherLinks = '${profile.otherLinks}', resume = "${profile.resume}", avatar = "${profile.avatar}", name = "${profile.name}", updatedOn = ${profile.registeredOn}`;
+			let query = `INSERT INTO PROFILE SET ? ON DUPLICATE KEY UPDATE linkedInProfile = ?, otherLinks = ?, resume = ?, avatar = ?, name = ?, updatedOn = ?`;
 			if(updateIsVerified) {
 				query += `, verifiedState = 0`;
 			}
-			db.query(query, profile, (err, result) => {
+			db.query(query, [ profile, profile.linkedInProfile, profile.otherLinks, profile.resume, profile.avatar, profile.name, profile.registeredOn ], (err, result) => {
 				if(err) {
-					console.log(err);
 					return reject(err);
 				}
 				return resolve(result);
@@ -27,8 +26,8 @@ class Model{
 
 	getProfile(email) {
 		return new Promise((resolve, reject) => {
-			let query = ` SELECT * FROM PROFILE WHERE email = "${email}"`;
-			db.query(query, (err, result) => {
+			let query = ` SELECT * FROM PROFILE WHERE email = ?`;
+			db.query(query, email,(err, result) => {
 				if(err) {
 					return reject(err);
 				}
@@ -44,16 +43,16 @@ class Model{
 	feed(offset, limit, filterObject) {
 		return new Promise((resolve, reject) => {
 			let query = `SELECT * FROM PROFILE WHERE `;
+			let queryParamArray = [];
 			for (let [key, value] of Object.entries(filterObject)) {
-				console
-				if(key == 'year' && value) {
-					query += `${key} = ${value} AND `;
-				} else if(value){
-					query += `${key} = "${value}" AND `;
+				if(value){
+					query += `${key} = ? AND `;
+					queryParamArray.push(value);
 				}
 			}
-			query += `verifiedState = 1 ORDER BY registeredOn ASC LIMIT ${limit} OFFSET ${offset}`;
-			db.query(query, (err, result) => {
+			query += `verifiedState = 1 ORDER BY registeredOn ASC LIMIT ? OFFSET ?`;
+			queryParamArray.push(limit, offset);
+			db.query(query, queryParamArray,(err, result) => {
 				if(err) {
 					console.log(err);
 					return reject(err);
@@ -73,16 +72,15 @@ class Model{
 	getCount(filterObject) {
 		return new Promise((resolve, reject) => {
 			let query = `SELECT COUNT(*) AS totalCount FROM PROFILE WHERE `;
+			let queryParamArray = [];
 			for (let [key, value] of Object.entries(filterObject)) {
-				console
-				if(key == 'year' && value) {
-					query += `${key} = ${value} AND `;
-				} else if(value){
-					query += `${key} = "${value}" AND `;
+				if(value){
+					query += `${key} = ? AND `;
+					queryParamArray.push(value);
 				}
 			}
 			query += `verifiedState = 1`;
-			db.query(query, (err, result) => {
+			db.query(query, queryParamArray, (err, result) => {
 				if(err) {
 					return reject(err);
 				}
