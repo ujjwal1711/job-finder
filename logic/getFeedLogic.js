@@ -11,10 +11,13 @@ class GetFeedLogic {
 				filterObject.jobType = req.query.jobType || null;
 				filterObject.jobTitle = req.query.jobTitle || null;
 				filterObject.year = req.query.year || null;
+				let finalResp = {};
 				let data = await model.feed(offset, limit, filterObject);
 				let totalCount = await model.getCount(filterObject);
-				data.totalCount = totalCount[0].totalCount;
-				return resolve(data);
+				finalResp.candidates = data.data;
+				finalResp.offset = data.offset;
+				finalResp.totalCount = totalCount[0].totalCount;
+				return resolve(finalResp);
 			}
 			catch(err) {
 				return reject(err);

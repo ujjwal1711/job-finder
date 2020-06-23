@@ -65,7 +65,7 @@ let handlers = {
 	getFeed: async (req, resp) => {
 		await getFeedLogic.getFeed(req)
 			.then((data) => {
-				return resp.status(200).json({ feed: data });
+				return resp.status(200).json( data );
 			})
 			.catch(error => {
 				console.log(error);
