@@ -11,6 +11,7 @@ class GetFeedLogic {
 				filterObject.jobType = req.query.jobType || null;
 				filterObject.jobTitle = req.query.jobTitle || null;
 				filterObject.year = req.query.year || null;
+				filterObject.status = req.query.status || null;
 				let finalResp = {};
 				let data = await model.feed(offset, limit, filterObject);
 				let totalCount = await model.getCount(filterObject);
